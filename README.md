@@ -24,6 +24,7 @@ and toy codes which perform said atomic processes
 * matplotlib (tested with version 3.8.0)
 * numpy (tested with version 1.25.2)
 * unittest
+* pygments (tested with version 2.15.1)
 
 ### Required Jupyter Kernels
 * IR Kernel for R https://github.com/IRkernel/IRkernel (tested with version 1.3.2)
