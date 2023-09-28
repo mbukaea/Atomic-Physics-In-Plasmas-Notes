@@ -12,6 +12,7 @@ and toy codes which perform said atomic processes
 ### General programs
 * Pandoc (tested with version 3.1.8)
 * Python (tested with version 3.11)
+* R (tested with version 4.3.1)
 
 ### Required R Packages
  * knitr (tested with version 1.44)
