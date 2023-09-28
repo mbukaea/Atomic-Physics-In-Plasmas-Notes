@@ -16,7 +16,7 @@ and toy codes which perform said atomic processes
 
 ### Required R Packages
  * knitr (tested with version 1.44)
- * rmarkdown (tested with version 2.25)
+ * bookdown (tested with version 0.35)
  * IRdisplay (tested with version 1.1)
  * reticulate (tested with version 1.32.0)
 
