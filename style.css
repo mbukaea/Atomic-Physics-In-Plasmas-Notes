@@ -51,6 +51,13 @@ ul {
   position: static;
 }
 
+#divh2code{
+  text-indent: 0px;
+  margin-left: 50px;
+  position: static;
+}
+
+
 #divh3first{
   text-indent: 100px;
   margin-left: 100px;
