@@ -7,6 +7,11 @@
 .title.toc-ignore {
 	display: none;
 }
+
+.book .book-body {
+   left: 0px;
+ }
+    
 .h1first {
   border: 2.5px solid #333;
   padding: 8px 12px;
@@ -20,6 +25,10 @@
   position: static;
 }
 
+.book.with-summary .book-body {
+    left: 0px;
+}
+    
 .p1 {
   margin-left: 0px;
 }
@@ -33,7 +42,7 @@
 }
 
 ul {
-  margin-left: 100px;
+  margin-left: 00px;
 }
 
 #divh2first{
