@@ -100,9 +100,9 @@ knitr::include_graphics("Momentum.png")
 #'<p class="p2">
 #'This section will outline various databases of atomic data    
 #'<ul>
-#'    <li> <a href="https://www.adas.ac.uk/about.php"> ADAS</a> </li>   
-#'    <li> <a href="https://open.adas.ac.uk">OpenADAS </a> </li>
-#'    <li> <a href="https://www-amdis.iaea.org/ALADDIN/">ALADDIN</a></li>   
+#'<li> <a href="https://www.adas.ac.uk/about.php"> ADAS</a> </li>   
+#'<li> <a href="https://open.adas.ac.uk">OpenADAS </a> </li>
+#'<li> <a href="https://www-amdis.iaea.org/ALADDIN/">ALADDIN</a></li>   
 #'</ul>
 #'</p>    
 #'<div id="divh2first"><h2 class="h2next" >Atomic Data</h2></div>
@@ -117,6 +117,8 @@ knitr::include_graphics("Momentum.png")
 #'<div id="divh2first"><h2 class="h2first">Charge exchange code</h2></div>
 #'<a id="code:charge-exchange-code"></a>
 #' <p class="p2">Below is the python script which was used to test the charge exchange impementation. </p> 
-#' <div id="divh2">
-#+ python, code=readLines("./charge-exchange.py"), eval=FALSE, width=400
+#+ , echo=FALSE
+system2("pygmentize", args=c("-O","full,style=emacs,linenos=1","-o","test.html","charge-exchange.py"))
+#' <div id="divh2code">
+#' <iframe src="./test.html" width=940, height=2150 style="overflow:hidden"></iframe>
 #' </div>
