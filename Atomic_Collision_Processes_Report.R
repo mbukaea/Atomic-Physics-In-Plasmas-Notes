@@ -8,7 +8,7 @@
 #'    config:
 #'      split_by: chapter+section
 #'      toc:
-#'        collapse: chapter 
+#'        collapse: section
 #'        scroll_highlight: true
 #'        before: null
 #'        after: null
@@ -40,12 +40,19 @@
 #'  
 #' ### Definitions 
 #' The following subsections explains the meaning of various quantities used in the code 
+#'
 #' * Weight ($w$) - A macroparticle representing a particular number of physical particles 
+#'
 #' * Deltaweight ($dw$) - Change in the weight of a particle \@ref(eq:dw-charge-exchange) 
+#'
 #' * Ion density ($n_{ions}$) - number density of ions 
+#'
 #' * Time step ($d t$) - Time step interval 
+#'
 #' * Charge exchange rate ($R_{CE}$) - Rate at which charge exchange rate occurs 
+#'
 #' * Fluid picture decribes the ions of the plasma (H<sup>+</sup>) 
+#'
 #' * Particle picture describes the neutrals of the plasma (H) 
 #' 
 #' ### Equations 
@@ -85,14 +92,19 @@ knitr::include_graphics("Momentum.png")
 #'
 #' ## Atomic Databases 
 #' This section will outline various databases of atomic data    
-#' * <a href="https://www.adas.ac.uk/about.php"> ADAS</a>   
+#'
+#' * <a href="https://www.adas.ac.uk/about.php"> ADAS </a>   
+#'
 #' * <a href="https://open.adas.ac.uk">OpenADAS </a> 
-#' * <a href="https://www-amdis.iaea.org/ALADDIN/">ALADDIN</a>  
+#'
+#' * <a href="https://www-amdis.iaea.org/ALADDIN/">ALADDIN </a>  
 #'
 #' ## Atomic Data 
 #' This section will outline various atomic data, analytical formula which have been used in NESO.    
+#'
 #' *  <a href="https://scientific-publications.ukaea.uk/wp-content/uploads/CLM-R137.pdf">Charge exchange data</a>
-#' * <a href="https://link.springer.com/article/10.1007/BF01392963">Electron impact ionisation rate data</a> 
+#'
+#' *  <a href="https://link.springer.com/article/10.1007/BF01392963">Electron impact ionisation rate data</a> 
 #'
 #' # Codes
 #'
