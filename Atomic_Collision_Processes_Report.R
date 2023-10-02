@@ -4,7 +4,7 @@
 #'date: ''
 #'output:
 #'  bookdown::gitbook:
-#'    css: css/style-bookdown.css
+#'    css: "css/style-bookdown.css"
 #'    config:
 #'      split_by: chapter+section
 #'      toc:
@@ -15,16 +15,26 @@
 #'      toolbar:
 #'        position: fixed
 #'      edit : null
-#'      download: null
 #'      search:
 #'        engine: lunr # or fuse
 #'        # options to control/tune search engine behavior (for
 #'        # fuse.js, refer to https://fusejs.io/api/options.html)
-#'        options: null
+#'        options: true
 #'      fontsettings:
 #'        theme: white
 #'        family: sans
 #'        size: 2
+#'      sharing:
+#'         facebook: false
+#'         github: false
+#'         twitter: false
+#'         linkedin: false
+#'         weibo: false
+#'         instapaper: false
+#'         vk: false
+#'         whatsapp: false
+#'         all: null
+#'      info: true
 #'---
 
 #' # Atomic processes in plasma 
@@ -58,6 +68,18 @@
 #' ### Equations 
 #' \begin{equation}
 #' dw = R_{CE} \ w \ n_{ions} \ d t (\#eq:dw-charge-exchange)
+#' \end{equation}
+#' The evolution of the velocity of the neutrals is
+#' \begin{equation}
+#' \dfrac{dv_n}{dt} = - \dfrac{dw}{w} v_n + \dfrac{dw}{w} v_i (\#eq:dvpdt-charge-exchange)
+#' \end{equation}
+#' The evolution of the velocity of the ions is
+#' \begin{equation}
+#' \dfrac{dv_i}{dt} = \dfrac{dw}{w} v_n + \dfrac{dw}{w} v_i (\#eq:dvidt-charge-exchange)
+#' \end{equation}
+#' The differential equations form a set out of coupled differential equations where the analytical solution is
+#' \begin{equation}
+#'  = (\#eq:analyical-solution-charge-exchange)
 #' \end{equation}
 #'
 #' ### Results
@@ -111,7 +133,8 @@ knitr::include_graphics("Momentum.png")
 #' ## Charge exchange code
 #' <a id="code:charge-exchange-code"></a>
 #' Below is the python script which was used to test the charge exchange impementation.
-#+ , echo=FALSE
-#+ python, code=readLines("./charge-exchange.py"), eval=FALSE, width=400, 
-# system2("pygmentize", args=c("-O","full,style=emacs,linenos=1","-o","test.html","charge-exchange.py"))
-# <iframe src="./test.html" width=940, height=2150 style="overflow:hidden"></iframe>
+
+#+ echo=FALSE
+system2("pygmentize", args=c("-O","full,style=emacs,linenos=1","-o","test.html","./charge-exchange.py"))
+
+#' <iframe src="../test.html" width=850, height=1500 style="overflow:hidden"></iframe>

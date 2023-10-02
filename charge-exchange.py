@@ -1,128 +1,114 @@
-#This python script executes charge exchange
+import numpy as np 
 import matplotlib.pyplot as plt #Used for plotting 
-import numpy as np #Used for normal distribution
-import unittest #Used for unit testing of code
-R_CE = 5E-14 #Units m^3 s^-1
-w = 1.65E+16 #No units
-dt = 1.66667e-07 #Units Seconds
-timestep=0 #No units
-max_neutrals_density=3.3e18;
-max_timesteps=800 #No units
-fluid_velocity_sd=0.0
+from scipy.linalg import expm #Used for calculating analytical solution
 
-mass_neutral=1.0 #Nektar units
-mass_ion=1.0 #Nektar units
+class IonFluid: 
 
-neutrals_density=np.zeros(max_timesteps+1) #Nektar Units
-ion_density=np.zeros(max_timesteps+1) #Nektar Units
-fluid_velocity=np.zeros(max_timesteps+1) #Nektar Units
-fluid_momentum=np.zeros(max_timesteps+1) #Nektar Units
-
-neutrals_velocity=np.full(max_timesteps+1,0.5) #Nektar Units
-
-
-n_to_nektar=3.33333e-19 #Conversion factor from SI to nektar units
-dt_nektar=0.005 #Timestep in Nektar units
-neutrals_momentum=np.zeros(max_timesteps+1) #Nektar units
-time=np.zeros(max_timesteps+1) #Time in Nektar Units
-total_momentum_injected=np.zeros(max_timesteps+1) #Nektar Units
-
-particle_injection_timestep_cutoff=100 #Timestep at which code stops injecting particles
-
-class InitialConditions:
-    def __init__(self,fluid_density,fluid_momentum,neutrals_density,neutrals_velocity):
-        self.fluid_density=fluid_density
-        self.fluid_momentum=fluid_momentum
-        self.neutrals_density=neutrals_density
-        self.neutrals_velocity=neutrals_velocity
+    def __init__(self,mass:float,density:float,momentum:float) -> None:
+        self.density = density
+        self.mom = momentum
+        self.mass=mass
+        self.energy = (momentum**2.0)/(2.0*mass)
         
-#Add mass of a single neutral        
-class ParticleDat:
-    def __init__(self, max_timesteps, initial_neutrals_density, initial_neutrals_velocity):
-        self.max_timesteps=max_timesteps #No units
-        self.neutrals_density=np.zeros(max_timesteps+1)
-        self.neutrals_velocity=np.zeros(max_timesteps+1)
-        self.neutrals_density[0]=initial_neutrals_density #Units SI
-        self.neutrals_velocity[0]=initial_neutrals_velocity #Nektar Units
+    def getRandomMom(self) -> float:
 
-#Add mass of a single ion
-class FluidDat:
-    def __init__(self,max_timesteps, initial_ion_density, initial_fluid_momentum):
-        self.max_timesteps=max_timesteps #No units
-        self.ion_density=np.zeros(max_timesteps+1)
-        self.fluid_momentum=np.zeros(max_timesteps+1)
-        self.ion_density[0]=initial_ion_density #Units SI
-        self.fluid_momentum[0]=initial_fluid_momentum #Nektar Units
+        return np.random.normal(self.mom,self.energy)
+    
+    def getIonEnergy(self) -> float:
 
-class Diagnostics:
-    def __init__(self,fluid_temp,particle_temp):
-        self.fluid_temp=fluid_temp
-        self.particle_temp=particle_temp
+        return (self.mom**2.0)/(2.0*self.mass)
+    
+class Particle:
+    def __init__(self,mass:float,weight:float,vel:float) -> None:
+        self.mass = mass
+        self.weight = weight
+        self.vel = vel 
 
-#Add function which defines takes ParticleDat and FluidDat
-#and perform charge exchange between them
+    def applyCX(self,dw,ionFluid:IonFluid) -> None:
+
+        ionMom = ionFluid.getRandomMom()
+
+        ionFluid.mom +=dw * self.vel * self.mass / self.weight
+        self.vel -= dw * self.vel / self.weight
         
-IC = InitialConditions(0.0,0.0,0.0,0.5)
-Neutrals = ParticleDat(max_timesteps,IC.neutrals_density,IC.neutrals_velocity)    
-Fluid = FluidDat(max_timesteps,IC.fluid_density,IC.fluid_momentum)
+        self.vel += dw *  ionMom / (self.weight*self.mass)
+        ionFluid.mom -= dw * ionMom  / self.weight
+        ionFluid.energy = ionFluid.getIonEnergy()
 
-while timestep <= max_timesteps:
-    if timestep <= particle_injection_timestep_cutoff:
-        neutrals_density[timestep]=timestep*max_neutrals_density/float(particle_injection_timestep_cutoff)
-        ion_density[timestep]=max_neutrals_density
-    else:
-        neutrals_density[timestep]=neutrals_density[timestep-1]
-        ion_density[timestep]=ion_density[timestep-1]
+class runner:
+    def __init__(self,ions:IonFluid,neutrals:Particle,number_of_timesteps,dt_nektar,dt_SI,CXrate):
+        self.ions=ions
+        self.neutrals=neutrals
+        self.number_of_timesteps=number_of_timesteps
+        self.dt_SI=dt_SI
+        self.dt_nektar=dt_nektar
+        self.CXrate = CXrate
+
+    def runCX(self):
+        neutralVel = np.zeros(self.number_of_timesteps)
+        ionMom = np.zeros(self.number_of_timesteps)
+
+        ionMom_analytical = np.zeros(self.number_of_timesteps)
+        neutralVel_analytical = np.zeros(self.number_of_timesteps)
+        time = np.zeros(self.number_of_timesteps)
+
+        for i in range(len(ionMom)):
+	        #This section determines the numerical solution
+            dw = self.dt_SI * self.CXrate * self.neutrals.weight * self.ions.density 
+            if dw > self.neutrals.weight:
+                dw=self.neutrals.weight
+            self.neutrals.applyCX(dw,self.ions)
         
-    if timestep<= particle_injection_timestep_cutoff and timestep!=0:   
-        injected_number_particles=(max_neutrals_density/float(particle_injection_timestep_cutoff))
-        dp_injected=mass_neutral*injected_number_particles*neutrals_velocity[timestep]*n_to_nektar
-        total_momentum_injected[timestep]=total_momentum_injected[timestep-1] + dp_injected           
-    if timestep>particle_injection_timestep_cutoff:
-        total_momentum_injected[timestep]=total_momentum_injected[timestep-1]
+            neutralVel[i] = self.neutrals.vel
+            ionMom[i] = self.ions.mom 
+            time[i] = i*self.dt_nektar
         
-    time[timestep]=timestep*dt  
-    #Units dw
-    #=[m^3 s^-1]*[unitless]*[m^-3]*[s]
-    #=[Unitless] 
-    # weight value changes as we increase the neutrals_density.
-    w=dt_nektar*neutrals_density[timestep]
-    
-    dw = R_CE*w*ion_density[timestep]*dt
-    if dw>w:
-        dw=w
-    
-    #Units neutrals_momentum (nektar_units)
-    #=[nektar_mass]*[nektar_velocity]*[SI_number_density]*[conversion_factor_SI_to_nektar_for_density]
-    neutrals_momentum[timestep]=mass_neutral*neutrals_velocity[timestep]*neutrals_density[timestep]*n_to_nektar
-    
-    #Units fluid_velocity (nektar_units)
-    #=[nektar_momentum]*[1/nektar_mass]*[1/SI_number_density]*[1/conversion_factor_SI_to_nektar_for_density]
-    if ion_density[timestep] != 0.0:
-        fluid_velocity[timestep]=fluid_momentum[timestep]/(mass_ion*ion_density[timestep]*n_to_nektar)   
-    random_fluid_velocity=np.random.normal(fluid_velocity[timestep],fluid_velocity_sd,size=None)
-    
-    #Units dp_tot
-    #=[unitless]*[nektar_mass]*[nektar_velocity] 
-    dp_tot = dw*(- mass_neutral*neutrals_velocity[timestep] + mass_ion*random_fluid_velocity);
-    
-    if timestep < max_timesteps:
-        if ion_density[timestep] !=0 and w != 0.0:
-            neutrals_velocity[timestep+1]=neutrals_velocity[timestep] + dp_tot/(w*mass_neutral)
-            fluid_momentum[timestep+1]=fluid_momentum[timestep] - dp_tot*n_to_nektar/dt_nektar
-    timestep=timestep+1
+            #This section determines the analytical solution
+            a  = np.matrix('-1 1; 1 -1')
+            b= expm((dw*i/self.neutrals.weight)*a) #lambda = dw/(w*dt_nektar) time=i*dt_nektar => lambda*time=dt*i/weight
+            c = np.array([initial_neutral_velocity,initial_fluid_momentum])
+            d=b.dot(c)
+            neutralVel_analytical[i]=d[0]
+            ionMom_analytical[i]=d[1]
+            
+        plt.clf()
+        plt.plot(time, ionMom,'b', label="Fluid Momentum")  
+        plt.plot(time, self.neutrals.mass*neutralVel,'g', label="Neutrals Momentum")  
+        plt.plot(time, self.neutrals.mass*neutralVel + ionMom ,'r', label="Total Momentum of Fluid+Particles")  
 
-plt.clf()
-plt.plot(time, fluid_momentum,'b', label="Fluid Momentum")  
-plt.plot(time, neutrals_momentum,'g', label="Neutrals Momentum")  
+        plt.plot(time, self.neutrals.mass*neutralVel_analytical , 'y', label='Anlytical solution Particles')
+        plt.plot(time, ionMom_analytical , 'k', label='Anlytical Solution Fluid')
 
-plt.plot(time, neutrals_momentum+fluid_momentum,'ro', label="Total Momentum of Fluid+Particles")  
-plt.plot(time, total_momentum_injected,'y', label="Total injected momentum")  
-plt.axvline(x = 100, color = 'k', linestyle='--')
-plt.xlim([0, max_timesteps*dt])
-plt.ylim(bottom=0)
-plt.legend(loc="lower right")
-plt.xlabel('Time [Seconds]')
-plt.ylabel('Momentum [Nektar Units]')
-plt.tight_layout()
-plt.savefig('Momentum.png')
+        plt.xlim([0, len(ionMom)*dt_nektar])
+        plt.ylim(bottom=0)
+        plt.legend(loc="lower right")
+        plt.xlabel('Time [Nektar units]')
+        plt.ylabel('Momentum [Nektar Units]')
+        plt.tight_layout()
+        plt.savefig('Momentum.png')
+
+#Constants    
+mass_ion=1.0
+mass_neutral=1.0
+
+#Conversion of units
+SI_to_Nektar_n=3.33333e-19
+
+#Initial Conditions
+weight=1.65E+16
+initial_neutral_velocity=0.2
+initial_fluid_momentum=0.8
+initial_fluid_density=3.3e18
+
+#Timestep info
+dt_nektar=0.005 
+dt_SI=1.66667e-07
+
+#Rate info
+CXrate = 5E-14
+
+newPart = Particle(mass_neutral,weight,initial_neutral_velocity)
+newIonFluid = IonFluid(mass_ion,initial_fluid_density,initial_fluid_momentum)
+
+CXrunner = runner(newIonFluid,newPart,250,dt_nektar,dt_SI,CXrate)
+CXrunner.runCX()
