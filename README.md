@@ -4,7 +4,8 @@ and toy codes which perform said atomic processes
 
 ## Files Descriptions
 * Atomic_Collisions_Notes.ipynb - SOS notebook which currently makes use of an R kernel to produce a report on the codes in this repo and accompanying notes
-* charge-exchange.py - Python script which performs charge exchange
+* chargeexchange.py - Python script which performs charge exchange
+* unittests.py - Contains the unit tests for the various python scripts in this repo
 * style.css - css style file for generated html file from Atomic_Collisions_Notes.ipynb
 * Atomic_Collision_Processes_Report.R - Contains R script which is render into a html file
 
