@@ -35,8 +35,20 @@ class Particle:
         ionFluid.mom -= dw * ionMom  / self.weight
         ionFluid.energy = ionFluid.getIonEnergy()
 
+class InitialConditions:
+    def __init__(self,fluid_density,fluid_momentum,weight,neutrals_velocity) -> None:
+        self.fluid_density=fluid_density
+        self.fluid_momentum=fluid_momentum
+        self.weight=weight
+        self.neutrals_velocity=neutrals_velocity
+
+class Diagnostics:
+    def __init__(self,include_diagnostis:bool) -> None:
+        self.include_diagnostics=include_diagnostics
+
 class runner:
-    def __init__(self,ions:IonFluid,neutrals:Particle,number_of_timesteps,dt_nektar,dt_SI,CXrate):
+    def __init__(self,initial_conditions:InitialConditions,ions:IonFluid,neutrals:Particle,number_of_timesteps,dt_nektar,dt_SI,CXrate):
+        self.initial_conditions=initial_conditions
         self.ions=ions
         self.neutrals=neutrals
         self.number_of_timesteps=number_of_timesteps
@@ -64,9 +76,9 @@ class runner:
             time[i] = i*self.dt_nektar
         
             #This section determines the analytical solution
-            a  = np.matrix('-1 1; 1 -1')
-            b= expm((dw*i/self.neutrals.weight)*a) #lambda = dw/(w*dt_nektar) time=i*dt_nektar => lambda*time=dt*i/weight
-            c = np.array([initial_neutral_velocity,initial_fluid_momentum])
+            a = np.matrix('-1 1; 1 -1')
+            b = expm((dw*i/self.initial_conditions.weight)*a) #lambda = dw/(w*dt_nektar) time=i*dt_nektar => lambda*time=dt*i/weight
+            c = np.array([self.initial_conditions.neutrals_velocity,self.initial_conditions.fluid_momentum])
             d=b.dot(c)
             neutralVel_analytical[i]=d[0]
             ionMom_analytical[i]=d[1]
@@ -79,36 +91,10 @@ class runner:
         plt.plot(time, self.neutrals.mass*neutralVel_analytical , 'y', label='Anlytical solution Particles')
         plt.plot(time, ionMom_analytical , 'k', label='Anlytical Solution Fluid')
 
-        plt.xlim([0, len(ionMom)*dt_nektar])
+        plt.xlim([0, len(ionMom)*self.dt_nektar])
         plt.ylim(bottom=0)
         plt.legend(loc="lower right")
         plt.xlabel('Time [Nektar units]')
         plt.ylabel('Momentum [Nektar Units]')
         plt.tight_layout()
         plt.savefig('Momentum.png')
-
-#Constants    
-#mass_ion=1.0
-#mass_neutral=1.0
-
-#Conversion of units
-#SI_to_Nektar_n=3.33333e-19
-
-#Initial Conditions
-#weight=1.65E+16
-#initial_neutral_velocity=0.2
-#initial_fluid_momentum=0.8
-#initial_fluid_density=3.3e18
-
-#Timestep info
-#dt_nektar=0.005 
-#dt_SI=1.66667e-07
-
-#Rate info
-#CXrate = 5E-14
-
-#newPart = Particle(mass_neutral,weight,initial_neutral_velocity)
-#newIonFluid = IonFluid(mass_ion,initial_fluid_density,initial_fluid_momentum)
-
-#CXrunner = runner(newIonFluid,newPart,250,dt_nektar,dt_SI,CXrate)
-#CXrunner.runCX()

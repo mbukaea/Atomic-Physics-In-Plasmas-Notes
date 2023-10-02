@@ -84,9 +84,9 @@
 #'
 #' ### Results
 #' The results of my momentum conservation are show in figure \@ref(fig:momentum-conservation) . This
-#' came from running the python script [here](#code:charge-exchange-code)
+#' was produced making using o the python script shown [here](#code:charge-exchange-code) 
 #+ echo=FALSE,
-py_run_file("./charge-exchange.py")
+py_run_file("./unittests.py")
 #+, momentum-conservation, out.width="75%", fig.cap="Momentum Conservation test results.", echo=FALSE
 knitr::include_graphics("Momentum.png")
 #' ## Ionise 
