@@ -91,7 +91,8 @@ class runner:
             time[i] = i * self.dt_nektar
 
             # This section determines the analytical solution
-            a = np.matrix("-1 1; 1 -1")
+            #a = np.matrix("-1 1; 1 -1")
+            a = np.array([[-1, 1], [1,-1]])
             b = expm(
                 (dw * i / self.initial_conditions.weight) * a
             )  # lambda = dw/(w*dt_nektar) time=i*dt_nektar => lambda*time=dt*i/weight
