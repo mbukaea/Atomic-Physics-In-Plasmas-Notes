@@ -1,4 +1,5 @@
 # Reformat python scripts in this repository using black
+# and reformat shell scripts in this repository using shfmt
 name: Reformat python scripts
 
 on: 
@@ -29,9 +30,11 @@ jobs:
       - name: Format-python-scripts
         run: | 
           sudo apt install -y black
+	  sudo apt -y install shfmt
           black ./
+	  shfmt -l -w ./
       - name: Commit new documentation to branch
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Python scripts reformatted   
+          commit_message: Python and bash scripts reformatted   
           branch: main
