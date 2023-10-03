@@ -29,8 +29,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Format-python-scripts
         run: | 
-          sudo apt install -y black
-          sudo apt -y install shfmt
+          sudo apt install -y black shfmt
           black ./
           shfmt -l -w ./
       - name: Commit new documentation to branch
