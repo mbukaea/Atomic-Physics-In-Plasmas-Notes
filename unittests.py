@@ -3,13 +3,13 @@ import unittest
 
 
 class Testing(unittest.TestCase):
-    #This test checks whether the charge exchange function conserves momentum
-    #after running for 250 timesteps
+    # This test checks whether the charge exchange function conserves momentum
+    # after running for 250 timesteps
     def test_momentum_conservation(self):
         # Constants
         mass_ion = 1.0
         mass_neutral = 1.0
-        
+
         # Conversion of units
         SI_to_Nektar_n = 3.33333e-19
 
@@ -27,14 +27,28 @@ class Testing(unittest.TestCase):
         CXrate = 5e-14
 
         IC = CX.InitialConditions(
-            initial_fluid_density, initial_fluid_momentum, weight, initial_neutral_velocity
-            )
+            initial_fluid_density,
+            initial_fluid_momentum,
+            weight,
+            initial_neutral_velocity,
+        )
         newPart = CX.Particle(mass_neutral, weight, initial_neutral_velocity)
-        newIonFluid = CX.IonFluid(mass_ion, initial_fluid_density, initial_fluid_momentum)
+        newIonFluid = CX.IonFluid(
+            mass_ion, initial_fluid_density, initial_fluid_momentum
+        )
 
         CXrunner = CX.runner(IC, newIonFluid, newPart, 250, dt_nektar, dt_SI, CXrate)
         CXrunner.runCX()
-        self.assertLess(abs(CXrunner.ions.mom+CXrunner.neutrals.mass*CXrunner.neutrals.vel-initial_fluid_momentum - mass_neutral*initial_neutral_velocity),1e-12)
+        self.assertLess(
+            abs(
+                CXrunner.ions.mom
+                + CXrunner.neutrals.mass * CXrunner.neutrals.vel
+                - initial_fluid_momentum
+                - mass_neutral * initial_neutral_velocity
+            ),
+            1e-12,
+        )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
