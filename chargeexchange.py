@@ -8,7 +8,7 @@ class IonFluid:
         self.density = density
         self.mom = momentum
         self.mass = mass
-        self.energy = (momentum ** 2.0) / (2.0 * mass)
+        self.energy = self.getIonEnergy()
 
     def getRandomMom(self) -> float:
 

@@ -8,6 +8,8 @@ and toy codes which perform said atomic processes
 * unittests.py - Contains the unit tests for the various python scripts in this repo
 * style.css - css style file for generated html file from Atomic_Collisions_Notes.ipynb
 * Atomic_Collision_Processes_Report.R - Contains R script which is render into a html file
+* pre-commit.sh - bash script which must run sucessfully for a commit to be accepted
+* run_tests.sh - bash script to run unit tests for repo
 
 ## Requirements
 ### General programs
