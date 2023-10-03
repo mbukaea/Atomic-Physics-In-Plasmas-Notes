@@ -1,6 +1,7 @@
 import chargeexchange as CX
 import unittest
 
+
 class Testing(unittest.TestCase):
     # This test checks the initialisation of the IonFluid class and functions therein
     def test_IonFluid_class(self):
@@ -11,18 +12,23 @@ class Testing(unittest.TestCase):
         # Initial Conditions
         initial_fluid_momentum = 0.8
         initial_fluid_density = 3.3e18
-        
+
         newIonFluid = CX.IonFluid(
             mass_ion, initial_fluid_density, initial_fluid_momentum
         )
 
-        self.assertEqual(newIonFluid.mom,initial_fluid_momentum)
-        self.assertEqual(newIonFluid.mass,mass_ion)
-        self.assertEqual(newIonFluid.density,initial_fluid_density)
-        self.assertEqual(newIonFluid.getIonEnergy(),(initial_fluid_momentum**2.0)/(2.0*mass_ion))
-        self.assertEqual(newIonFluid.energy,(initial_fluid_momentum**2.0)/(2.0*mass_ion))
-        
-    # This test checks the initialisation of the Particle class  
+        self.assertEqual(newIonFluid.mom, initial_fluid_momentum)
+        self.assertEqual(newIonFluid.mass, mass_ion)
+        self.assertEqual(newIonFluid.density, initial_fluid_density)
+        self.assertEqual(
+            newIonFluid.getIonEnergy(),
+            (initial_fluid_momentum ** 2.0) / (2.0 * mass_ion),
+        )
+        self.assertEqual(
+            newIonFluid.energy, (initial_fluid_momentum ** 2.0) / (2.0 * mass_ion)
+        )
+
+    # This test checks the initialisation of the Particle class
     def test_Particle_class(self):
         print("\n Testing the Particle class")
         # Constants
@@ -34,11 +40,11 @@ class Testing(unittest.TestCase):
 
         newPart = CX.Particle(mass_neutral, weight, initial_neutral_velocity)
 
-        self.assertEqual(newPart.mass,mass_neutral)
-        self.assertEqual(newPart.vel,initial_neutral_velocity)
-        self.assertEqual(newPart.weight,weight)
+        self.assertEqual(newPart.mass, mass_neutral)
+        self.assertEqual(newPart.vel, initial_neutral_velocity)
+        self.assertEqual(newPart.weight, weight)
 
-    # This test checks the initialisation of the InitialConditions class  
+    # This test checks the initialisation of the InitialConditions class
     def test_InitialConditions_class(self):
         print("\n Testing the InitialConditions class")
         # Initial Conditions
@@ -46,19 +52,19 @@ class Testing(unittest.TestCase):
         initial_neutral_velocity = 0.2
         initial_fluid_momentum = 0.8
         initial_fluid_density = 3.3e18
-        
+
         IC = CX.InitialConditions(
             initial_fluid_density,
             initial_fluid_momentum,
             weight,
             initial_neutral_velocity,
         )
-        
-        self.assertEqual(IC.fluid_density,initial_fluid_density)
-        self.assertEqual(IC.fluid_momentum,initial_fluid_momentum)
-        self.assertEqual(IC.weight,weight)
-        self.assertEqual(IC.neutrals_velocity,initial_neutral_velocity)
-    
+
+        self.assertEqual(IC.fluid_density, initial_fluid_density)
+        self.assertEqual(IC.fluid_momentum, initial_fluid_momentum)
+        self.assertEqual(IC.weight, weight)
+        self.assertEqual(IC.neutrals_velocity, initial_neutral_velocity)
+
     # This test checks whether the charge exchange function conserves momentum
     # after running for 250 timesteps
     def test_CX_function(self):
@@ -95,7 +101,9 @@ class Testing(unittest.TestCase):
             mass_ion, initial_fluid_density, initial_fluid_momentum
         )
 
-        CXrunner = CX.runner(IC, newIonFluid, newPart, number_of_timesteps, dt_nektar, dt_SI, CXrate)
+        CXrunner = CX.runner(
+            IC, newIonFluid, newPart, number_of_timesteps, dt_nektar, dt_SI, CXrate
+        )
         CXrunner.runCX()
         self.assertLess(
             abs(
