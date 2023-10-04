@@ -18,10 +18,10 @@ and toy codes which perform said atomic processes
 * R (tested with version 4.3.1)
 
 ### Required R Packages
- * knitr (tested with version 1.44)
- * bookdown (tested with version 0.35)
- * IRdisplay (tested with version 1.1)
- * reticulate (tested with version 1.32.0)
+* knitr (tested with version 1.44)
+* bookdown (tested with version 0.35)
+* IRdisplay (tested with version 1.1)
+* reticulate (tested with version 1.32.0)
 
 ### Required Python Packages
 * matplotlib (tested with version 3.8.0)
