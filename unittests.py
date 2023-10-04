@@ -1,6 +1,7 @@
 import chargeexchange as CX
 import unittest
 
+
 class Testing(unittest.TestCase):
     # This test checks the initialisation of the IonFluid class and functions therein
     def test_IonFluid_class(self):
