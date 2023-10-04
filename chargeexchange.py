@@ -39,7 +39,7 @@ class Particle:
 
 class InitialConditions:
     def __init__(
-        self, fluid_density, fluid_momentum, weight, neutrals_velocity
+        self, fluid_density: float, fluid_momentum: float, weight: float, neutrals_velocity:float
     ) -> None:
         self.fluid_density = fluid_density
         self.fluid_momentum = fluid_momentum

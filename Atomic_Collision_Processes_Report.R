@@ -86,7 +86,7 @@
 #' The results of my momentum conservation are show in figure \@ref(fig:momentum-conservation) . This
 #' was produced making using o the python script shown [here](#code:charge-exchange-code) 
 #+ echo=FALSE,
-py_run_file("./unittests.py")
+system2("python", args=c("./unittests.py"))
 #+, momentum-conservation, out.width="75%", fig.cap="Momentum Conservation test results.", echo=FALSE
 knitr::include_graphics("Momentum.png")
 #' ## Ionise 
@@ -135,6 +135,6 @@ knitr::include_graphics("Momentum.png")
 #' Below is the python script which was used to test the charge exchange impementation.
 
 #+ echo=FALSE
-system2("pygmentize", args=c("-O","full,style=emacs,linenos=1","-o","test.html","./charge-exchange.py"))
+system2("pygmentize", args=c("-O","full,style=emacs,linenos=1","-o","test.html","./chargeexchange.py"))
 
 #' <iframe src="../test.html" width=850, height=1500 style="overflow:hidden"></iframe>
