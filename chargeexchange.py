@@ -52,8 +52,9 @@ class InitialConditions:
 
 
 class Diagnostics:
-    def __init__(self, include_diagnostis: bool) -> None:
+    def __init__(self, include_diagnostis: bool , include_sampling: bool) -> None:
         self.include_diagnostics = include_diagnostics
+        self.include_sampling = include_sampling
 
 
 class runner:

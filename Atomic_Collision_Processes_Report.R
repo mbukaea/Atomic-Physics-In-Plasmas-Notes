@@ -77,6 +77,16 @@
 #' \begin{equation}
 #' \dfrac{dv_{p}}{dt} = - \dfrac{dw}{dt} \dfrac{v_{p}}{w} + \dfrac{dw}{dt} \dfrac{v_{f}}{w} (\#eq:dvpdt-charge-exchange)
 #' \end{equation}
+#' This evolution equation can be found by thinking about the average velocity of particle before and averge charge exchange 
+#' has taken place. Assuming that the average velocity of a particle before a collision is $v_{p}$, the average velocity
+#' of a particle after change exchange is
+#' \begin{equation}
+#' = \dfrac{(w-\dfrac{dw}{dt})v_{p} + \dfrac{dw}{dt} v_{f} }{w}
+#' \end{equation}
+#' which means that the average velocity of a particle changes by
+#' \begin{equation}
+#' = - \dfrac{dw}{dt} \dfrac{v_{p}}{w} + \dfrac{dw}{dt} \dfrac{v_{f}}{w}
+#' \end{equation}
 #' The evolution of the velocity of the fluid is
 #' \begin{equation}
 #' \dfrac{dv_{f}}{dt} = \dfrac{dw}{dt} \dfrac{v_{p}}{w} - \dfrac{dw}{dt} \dfrac{v_{f}}{w} (\#eq:dvfdt-charge-exchange)
@@ -114,7 +124,7 @@
 #' Performing charge exchange between just one macroparticle and a fluid, and calculating their
 #' respective momentums results in figure \@ref(fig:momentum-conservation). The figure also shows a comparison
 #' between the numerical solution which includes sampling the fluid momentum at each time step, and the 
-#' analytical solution which doesn't. This figure make use the python script shown [here](#code:charge-exchange-code) 
+#' analytical solution which doesn't (see \@ref(eq:analyical-solution-charge-exchange)). This figure make use the python script shown [here](#code:charge-exchange-code) 
 #+ echo=FALSE,
 system2("python", args=c("./unittests.py","2>","/dev/null","&>","/dev/null"))
 #+, momentum-conservation, out.width="75%", fig.cap="Momentum Conservation test results.", echo=FALSE
@@ -152,11 +162,18 @@ knitr::include_graphics("Momentum.png")
 #' * <a href="https://www-amdis.iaea.org/ALADDIN/">ALADDIN </a>  
 #'
 #' ## Atomic Data 
+#' 
+#' ### Atomic data/formulas used within NESO
+#' 
 #' This section will outline various atomic data, analytical formula which have been used in NESO.    
 #'
 #' *  <a href="https://scientific-publications.ukaea.uk/wp-content/uploads/CLM-R137.pdf">Charge exchange data</a>
 #'
 #' *  <a href="https://link.springer.com/article/10.1007/BF01392963">Electron impact ionisation rate data</a> 
+#'
+#' ### Working with the data/formulas
+#'
+#' Each atomic database serves their data in different file formats.
 #'
 #' # Codes
 #'
