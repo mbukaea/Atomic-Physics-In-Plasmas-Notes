@@ -95,19 +95,19 @@ class runner:
             time[i] = i * self.dt_nektar
 
             # This section determines the analytical solution
-            a = np.array([[-1, 1], [1, -1]])
+            a = np.array([[-1, 1], [1, -1]]) #Matrix in analytical solution
             b = expm(
                 (dw * i / self.initial_conditions.weight) * a
             )  # lambda = dw/(w*dt_nektar) time=i*dt_nektar => lambda*time=dt*i/weight
-            c = np.array(
+            v0 = np.array(
                 [
                     self.initial_conditions.neutrals_velocity,
                     self.initial_conditions.fluid_momentum,
                 ]
             )
-            d = b.dot(c)
-            neutralVel_analytical[i] = d[0]
-            ionMom_analytical[i] = d[1]
+            v = b.dot(v0)
+            neutralVel_analytical[i] = v[0]
+            ionMom_analytical[i] = v[1]
 
         plt.clf()
         plt.plot(time, ionMom, "b", label="Fluid Momentum")

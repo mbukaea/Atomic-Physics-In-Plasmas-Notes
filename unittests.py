@@ -112,7 +112,7 @@ class Testing(unittest.TestCase):
                 - initial_fluid_momentum
                 - mass_neutral * initial_neutral_velocity
             ),
-            1e-12,
+            1e-12, "Total Momentum not conserved for charge exchange"
         )
 
 

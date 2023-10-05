@@ -46,7 +46,7 @@
 #' ### Physics 
 #' In Charge exchange an electron is transferred from one atom to another. An example is
 #' $$ H + H^{+} \rightarrow H^{+} + H $$
-#' If the 2 interacting atoms are one electron different that this means that the density of each atom is unchanged.   
+#' If the 2 interacting atoms are one electron different that this means that the density of each atom is unchanged by the reaction.   
 #'  
 #' ### Definitions 
 #' The following subsections explains the meaning of various quantities used in the code 
@@ -66,27 +66,57 @@
 #' * Particle picture describes the neutrals of the plasma (H) 
 #' 
 #' ### Equations 
+#' 
+#' #### Single Particle added
+#'
+#' The rate of change of the weight with time is
 #' \begin{equation}
-#' dw = R_{CE} \ w \ n_{ions} \ d t (\#eq:dw-charge-exchange)
+#' \dfrac{dw}{dt} = R_{CE} \ w \ n_{ions} (\#eq:dw-charge-exchange)
 #' \end{equation}
-#' The evolution of the velocity of the neutrals is
+#' The evolution of the velocity of the particle is
 #' \begin{equation}
-#' \dfrac{dv_n}{dt} = - \dfrac{dw}{w} v_n + \dfrac{dw}{w} v_i (\#eq:dvpdt-charge-exchange)
+#' \dfrac{dv_{p}}{dt} = - \dfrac{dw}{dt} \dfrac{v_{p}}{w} + \dfrac{dw}{dt} \dfrac{v_{f}}{w} (\#eq:dvpdt-charge-exchange)
 #' \end{equation}
-#' The evolution of the velocity of the ions is
+#' The evolution of the velocity of the fluid is
 #' \begin{equation}
-#' \dfrac{dv_i}{dt} = \dfrac{dw}{w} v_n + \dfrac{dw}{w} v_i (\#eq:dvidt-charge-exchange)
+#' \dfrac{dv_{f}}{dt} = \dfrac{dw}{dt} \dfrac{v_{p}}{w} - \dfrac{dw}{dt} \dfrac{v_{f}}{w} (\#eq:dvfdt-charge-exchange)
 #' \end{equation}
-#' The differential equations form a set out of coupled differential equations where the analytical solution is
+#' These differential equations form a set out of coupled differential equations, which when written in
+#' matrix form, can be seen to have the analytical solution 
 #' \begin{equation}
-#'  = (\#eq:analyical-solution-charge-exchange)
+#' \begin{pmatrix} v_{p} (t) \\ v_{f} (t) \end{pmatrix} = e^{ R_{CE} \ n_{ions} \begin{pmatrix} -1 & 1 \\ 1 & -1 \end{pmatrix} t }\begin{pmatrix} v_{p} (t=0) \\ v_{f} (t=0) \end{pmatrix} (\#eq:analyical-solution-charge-exchange)
+#' \end{equation}
+#' 
+#' #### Multiple particles added
+#' 
+#' The rate of change of the $n^{th}$ weight weight is 
+#' \begin{equation}
+#' \dfrac{dw_{n}}{dt} = R_{CE,n} \ w_{n} \ n_{ions} (\#eq:dw-charge-exchange-n)
+#' \end{equation}
+#' The evolution of the $n^{th}$ particles velocity is
+#' \begin{equation}
+#' \dfrac{dv_{pn}}{dt} = - \dfrac{dw_{n}}{dt} \dfrac{v_{pn}}{w_{n}} + \dfrac{dw_{n}}{dt} \dfrac{v_{f}}{w_{n}} (\#eq:dvpdt-charge-exchange-n)
+#' \end{equation}
+#' The evolution of the velocity of the fluid is
+#' \begin{equation}
+#' \dfrac{dv_{f}}{dt} = \sum_{n} \Bigg( \dfrac{dw_{n}}{dt} \dfrac{v_{pn}}{w_{n}} - \dfrac{dw_{n}}{dt} \dfrac{v_{f}}{w_{n}} \Bigg) (\#eq:dvfdt-charge-exchange-n)
+#' \end{equation}
+#' For 2 macroparticles and a fluid this equations to (writing out in matrix form)
+#' \begin{equation}
+#' \dfrac{d}{dt} \begin{pmatrix} v_{p1} \\ v_{p2} \\ v_{f} \end{pmatrix}  =
+#' \begin{pmatrix} - \dfrac{dw_{1}}{dt} \dfrac{1}{w_{1}} & 0 &  \dfrac{dw_{1}}{dt} \dfrac{1}{w_{1}} \\
+#'                 0 &  - \dfrac{dw_{2}}{dt} \dfrac{1}{w_{2}} & \dfrac{dw_{2}}{dt} \dfrac{1}{w_{2}} \\
+#'                 \dfrac{dw_{1}}{dt} \dfrac{1}{w_{1}} & \dfrac{dw_{2}}{dt} \dfrac{1}{w_{2}} & - \dfrac{dw_{1}}{dt} \dfrac{1}{w_{1}} - \dfrac{dw_{2}}{dt} \dfrac{1}{w_{2}} \end{pmatrix}
+#' \begin{pmatrix} v_{p1} \\ v_{p2} \\ v_{f} \end{pmatrix}
 #' \end{equation}
 #'
 #' ### Results
-#' The results of my momentum conservation are show in figure \@ref(fig:momentum-conservation) . This
-#' was produced making using o the python script shown [here](#code:charge-exchange-code) 
+#' Performing charge exchange between just one macroparticle and a fluid, and calculating their
+#' respective momentums results in figure \@ref(fig:momentum-conservation). The figure also shows a comparison
+#' between the numerical solution which includes sampling the fluid momentum at each time step, and the 
+#' analytical solution which doesn't. This figure make use the python script shown [here](#code:charge-exchange-code) 
 #+ echo=FALSE,
-system2("python", args=c("./unittests.py"))
+system2("python", args=c("./unittests.py","2>","/dev/null","&>","/dev/null"))
 #+, momentum-conservation, out.width="75%", fig.cap="Momentum Conservation test results.", echo=FALSE
 knitr::include_graphics("Momentum.png")
 #' ## Ionise 
