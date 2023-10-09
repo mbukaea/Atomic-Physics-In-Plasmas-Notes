@@ -121,14 +121,14 @@
 #' \end{equation}
 #'
 #' ### Results
-#' Performing charge exchange between just one macroparticle and a fluid, and calculating their
+#' Performing charge exchange between just 100 macroparticles and a fluid, and calculating their
 #' respective momentums results in figure \@ref(fig:momentum-conservation). The figure also shows a comparison
 #' between the numerical solution which includes sampling the fluid momentum at each time step, and the 
 #' analytical solution which doesn't (see \@ref(eq:analyical-solution-charge-exchange)). This figure make use the python script shown [here](#code:charge-exchange-code) 
 #+ echo=FALSE,
 system2("python", args=c("./unittests.py","2>","/dev/null","&>","/dev/null"))
 #+, momentum-conservation, out.width="75%", fig.cap="Momentum Conservation test results.", echo=FALSE
-knitr::include_graphics("Momentum.png")
+knitr::include_graphics("MomentumNumerical.png")
 #' ## Ionise 
 #' This section will outline what is involved in implementing ionisation 
 #'
