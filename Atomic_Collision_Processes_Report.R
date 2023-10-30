@@ -53,11 +53,17 @@
 #'
 #' * Weight ($w$) - A macroparticle representing a particular number of physical particles 
 #'
-#' * Deltaweight ($dw$) - Change in the weight of a particle \@ref(eq:dw-charge-exchange) 
+#' * $N_{CE}$ - The number of charge exchange events which happen in timestep dt \@ref(eq:dw-charge-exchange) 
 #'
 #' * Ion density ($n_{ions}$) - number density of ions 
 #'
-#' * Time step ($d t$) - Time step interval 
+#' * Time step ($dt$) - Time step interval 
+#'
+#' * V - Volume of the cell 
+#'
+#' * $v_{p}$ - Mean velocity of a particle within a macroparticles
+#'
+#' * $v_{f}$ - Mean velocity of an ion in the fluid
 #'
 #' * Charge exchange rate ($R_{CE}$) - Rate at which charge exchange rate occurs 
 #'
@@ -67,36 +73,72 @@
 #' 
 #' ### Equations 
 #' 
-#' #### Single Particle added
+#' #### Single Macroparticle exchanging with fluid
 #'
-#' The rate of change of the weight with time is
+#' In timestep $dt$ the number of charge exchange events which occur $N_{CE}$ is
 #' \begin{equation}
-#' \dfrac{dw}{dt} = R_{CE} \ w \ n_{ions} (\#eq:dw-charge-exchange)
+#' N_{CE} = R_{CE} \ w \ n_{ions} dt (\#eq:dw-charge-exchange)
 #' \end{equation}
-#' The evolution of the velocity of the particle is
+#' The change in the average velocity of particle within a macroparticle in this timestep $dt$ is
 #' \begin{equation}
-#' \dfrac{dv_{p}}{dt} = - \dfrac{dw}{dt} \dfrac{v_{p}}{w} + \dfrac{dw}{dt} \dfrac{v_{f}}{w} (\#eq:dvpdt-charge-exchange)
+#' dv_{p} = - \dfrac{N_{CE} v_{p}}{w} + \dfrac{N_{CE} v_{f}}{w} (\#eq:dvpdt-charge-exchange)
 #' \end{equation}
-#' This evolution equation can be found by thinking about the average velocity of particle before and averge charge exchange 
+#' This equation can be found by thinking about the average velocity of particle before and averge charge exchange 
 #' has taken place. Assuming that the average velocity of a particle before a collision is $v_{p}$, the average velocity
 #' of a particle after change exchange is
 #' \begin{equation}
-#' = \dfrac{(w-\dfrac{dw}{dt})v_{p} + \dfrac{dw}{dt} v_{f} }{w}
+#' = \dfrac{(w-N_{CE})v_{p} + N_{CE} v_{f} }{w}
 #' \end{equation}
 #' which means that the average velocity of a particle changes by
 #' \begin{equation}
-#' = - \dfrac{dw}{dt} \dfrac{v_{p}}{w} + \dfrac{dw}{dt} \dfrac{v_{f}}{w}
+#' = - \dfrac{N_{CE} v_{p}}{w} + \dfrac{N_{CE} v_{f}}{w}
 #' \end{equation}
-#' The evolution of the velocity of the fluid is
+#' By similar arguments you find that the change in the average velocity of the fluid is
 #' \begin{equation}
-#' \dfrac{dv_{f}}{dt} = \dfrac{dw}{dt} \dfrac{v_{p}}{w} - \dfrac{dw}{dt} \dfrac{v_{f}}{w} (\#eq:dvfdt-charge-exchange)
+#' dv_{f} = \dfrac{N_{CE} v_{p}}{N_{ions}} - \dfrac{N_{CE} v_{f}}{N_{ions}} (\#eq:dvfdt-charge-exchange)
 #' \end{equation}
-#' These differential equations form a set out of coupled differential equations, which when written in
-#' matrix form, can be seen to have the analytical solution 
+#' where $N_{ions}$ is the number of ions ($=n_{ions}V$ where V is the volume of the cell). These couple differential equations form a set out of coupled differential equations, which when written in
+#' matrix form, can be seen to have the analytical solution  (assumming w is time independent)
 #' \begin{equation}
-#' \begin{pmatrix} v_{p} (t) \\ v_{f} (t) \end{pmatrix} = e^{ R_{CE} \ n_{ions} \begin{pmatrix} -1 & 1 \\ 1 & -1 \end{pmatrix} t }\begin{pmatrix} v_{p} (t=0) \\ v_{f} (t=0) \end{pmatrix} (\#eq:analyical-solution-charge-exchange)
+#' \begin{pmatrix} v_{p} (t) \\ v_{f} (t) \end{pmatrix} = e^{ R_{CE} \ n_{ions} \begin{pmatrix} -1 & 1 \\ \frac{w}{V} & - \frac{w}{V} \end{pmatrix} t }\begin{pmatrix} v_{p} (t=0) \\ v_{f} (t=0) \end{pmatrix} (\#eq:analyical-solution-charge-exchange)
 #' \end{equation}
-#' 
+#' This result may at first look to be dependent on the volume of the cell your in, but as w is constructed using the formula
+#' \begin{equation}
+#' \dfrac{V n_{neutrals}}{n_{macroparticles}},
+#' \end{equation}
+#' It can easily be seen that $\frac{w}{V}$ is independent ont the volume.
+#'
+#' #### Total Energy
+#'
+#' The average kinetic energy of a particle is
+#' \begin{equation}
+#' \dfrac{m}{2 \sigma \sqrt{2 \pi} } \int_{-\infty}^{\infty} v^{2} e^{-\dfrac{1}{2} \Big( \dfrac{v - \mu}{\sigma} \Big)^{2} } dv
+#' \end{equation}
+#' where $\mu$ is the mean velocity, and $\sigma$ is the particle thermal velocity defined by
+#' \begin{equation}
+#' \sigma \ = \ \sqrt{\dfrac{kT}{m}}
+#' \end{equation}
+#' This integral can be solved by making the substitution 
+#' \begin{equation}
+#' u = \dfrac{x - \mu}{\sqrt{2} \sigma}
+#' \end{equation}
+#' After substitution you get
+#' \begin{equation}
+#' \dfrac{m}{2 \sqrt{pi}} \int_{-\infty}^{\infty} ( 2 \sigma^{2} u^{2} + 2 \sqrt{2} \mu \sigma u + \mu^{2} ) e^{-u^2} du 
+#' \end{equation}
+#' The integral over $u e^{-u^2}$ can be seen to be 0 by symmetry. The other integrals are known and are as follows 
+#' \begin{equation}
+#' \int_{-\infty}^{\infty} x^{2} e^{-x^2} \ = \ \dfrac{\sqrt{\pi}}{2}
+#' \end{equation}
+#' and 
+#' \begin{equation}
+#' \int_{-\infty}^{\infty} e^{-x^2} \ = \ \sqrt{\pi}
+#' \end{equation}
+#' leading to the average kinetic energy of a particle to be
+#' \begin{equation}
+#' \ = \ \dfrac{m}{2} ( \mu^2 + \sigma^2 )
+#' \end{equation}
+#'
 #' #### Multiple particles added
 #' 
 #' The rate of change of the $n^{th}$ weight weight is 
@@ -109,26 +151,30 @@
 #' \end{equation}
 #' The evolution of the velocity of the fluid is
 #' \begin{equation}
-#' \dfrac{dv_{f}}{dt} = \sum_{n} \Bigg( \dfrac{dw_{n}}{dt} \dfrac{v_{pn}}{w_{n}} - \dfrac{dw_{n}}{dt} \dfrac{v_{f}}{w_{n}} \Bigg) (\#eq:dvfdt-charge-exchange-n)
+#' \dfrac{dv_{f}}{dt} = \sum_{n} \Bigg( \dfrac{dw_{n}}{dt} \dfrac{v_{pn}}{N_{ions}} - \dfrac{dw_{n}}{dt} \dfrac{v_{f}}{N_{ions}} \Bigg) (\#eq:dvfdt-charge-exchange-n)
 #' \end{equation}
 #' For 2 macroparticles and a fluid this equations to (writing out in matrix form)
 #' \begin{equation}
 #' \dfrac{d}{dt} \begin{pmatrix} v_{p1} \\ v_{p2} \\ v_{f} \end{pmatrix}  =
 #' \begin{pmatrix} - \dfrac{dw_{1}}{dt} \dfrac{1}{w_{1}} & 0 &  \dfrac{dw_{1}}{dt} \dfrac{1}{w_{1}} \\
 #'                 0 &  - \dfrac{dw_{2}}{dt} \dfrac{1}{w_{2}} & \dfrac{dw_{2}}{dt} \dfrac{1}{w_{2}} \\
-#'                 \dfrac{dw_{1}}{dt} \dfrac{1}{w_{1}} & \dfrac{dw_{2}}{dt} \dfrac{1}{w_{2}} & - \dfrac{dw_{1}}{dt} \dfrac{1}{w_{1}} - \dfrac{dw_{2}}{dt} \dfrac{1}{w_{2}} \end{pmatrix}
+#'                 \dfrac{dw_{1}}{dt} \dfrac{1}{N_{ions}} & \dfrac{dw_{2}}{dt} \dfrac{1}{N_{ions}} & - \dfrac{dw_{1}}{dt} \dfrac{1}{N_{ions}} - \dfrac{dw_{2}}{dt} \dfrac{1}{N_{ions}} \end{pmatrix}
 #' \begin{pmatrix} v_{p1} \\ v_{p2} \\ v_{f} \end{pmatrix}
 #' \end{equation}
 #'
 #' ### Results
-#' Performing charge exchange between just 100 macroparticles and a fluid, and calculating their
-#' respective momentums results in figure \@ref(fig:momentum-conservation). The figure also shows a comparison
-#' between the numerical solution which includes sampling the fluid momentum at each time step, and the 
-#' analytical solution which doesn't (see \@ref(eq:analyical-solution-charge-exchange)). This figure make use the python script shown [here](#code:charge-exchange-code) 
-#+ echo=FALSE,
-system2("python", args=c("./unittests.py","2>","/dev/null","&>","/dev/null"))
-#+, momentum-conservation, out.width="75%", fig.cap="Momentum Conservation test results.", echo=FALSE
-knitr::include_graphics("MomentumNumerical.png")
+#' One example of performing charge exchange between 2000 macroparticles and a fluid, and calculating the
+#' respective momentums for a single ion and single neutral results in figure \@ref(fig:momentum-conservation-single). A mean momentum
+#' for a macroparticle momentum is calculated, and the red, green, and blue lines represent 1,2 and 3 standard deviations from that value.
+#' This figure make use the python script shown [here](#code:charge-exchange-code) 
+#+, momentum-conservation-bulk, out.width="75%", fig.cap="Evolution of the bulk momentum of the particles and fluid.", echo=FALSE
+knitr::include_graphics("./Momentum_Numerical_Bulk.png")
+
+#+, momentum-conservation-single, out.width="75%", fig.cap="Evolution of the momentum of a single ion and neutral.", echo=FALSE
+knitr::include_graphics("./Momentum_Numerical_Single.png")
+
+#+, momentum-exp, out.width="75%", fig.cap="Check of exponential factor in evolution of single atom properties compared to expected solution.", echo=FALSE
+knitr::include_graphics("../Images/2E-8/Diff_Exp.png")
 #' ## Ionise 
 #' This section will outline what is involved in implementing ionisation 
 #'

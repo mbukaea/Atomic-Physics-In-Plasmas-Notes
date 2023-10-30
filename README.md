@@ -10,6 +10,7 @@ and toy codes which perform said atomic processes
 * Atomic_Collision_Processes_Report.R - Contains R script which is render into a html file
 * pre-commit.sh - bash script which must run sucessfully for a commit to be accepted
 * run_tests.sh - bash script to run unit tests for repo
+* Requirements.txt - Python requirements.txt file used to recreate a reproducible envirnoment
 
 ## Requirements
 ### General programs

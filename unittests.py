@@ -2,7 +2,6 @@ import numpy as np
 import chargeexchange as CX
 import unittest
 
-
 class Testing(unittest.TestCase):
     # This test checks the initialisation of the IonFluid class and functions therein
     def test_IonFluid_class(self):
@@ -11,26 +10,26 @@ class Testing(unittest.TestCase):
         mass_ion = 1.0
 
         # Initial Conditions
-        initial_fluid_momentum = 0.8
+        initial_fluid_momentum_single_ion = 0.8
         initial_fluid_density = 3.3e18
+        initial_fluid_temperature=1.0
+        initial_fluid_bulk_momentum=initial_fluid_momentum_single_ion*initial_fluid_density
+        volume=1
 
         newIonFluid = CX.IonFluid(
-            mass_ion, initial_fluid_density, initial_fluid_momentum
+            mass_ion, initial_fluid_density, initial_fluid_bulk_momentum,initial_fluid_temperature,volume
         )
 
-        self.assertEqual(newIonFluid.mom, initial_fluid_momentum)
+        self.assertEqual(newIonFluid.mom, initial_fluid_bulk_momentum)
         self.assertEqual(newIonFluid.mass, mass_ion)
         self.assertEqual(newIonFluid.density, initial_fluid_density)
+        #self.assertEqual(
+        #    newIonFluid.getIonEnergy(),
+        #    (initial_fluid_bulk_momentum**2.0) / (2.0 * mass_ion*initial_fluid_density),
+        #)
         self.assertEqual(
-            newIonFluid.getIonEnergy(),
-            (initial_fluid_momentum**2.0) / (2.0 * mass_ion),
+            newIonFluid.kinetic_energy, ((initial_fluid_bulk_momentum*volume)**2.0)/(2.0*(initial_fluid_density*volume)) + mass_ion*initial_fluid_density*volume*((initial_fluid_temperature/mass_ion))/2.0
         )
-        self.assertEqual(
-            newIonFluid.energy, (initial_fluid_momentum**2.0) / (2.0 * mass_ion)
-        )
-
-    # def test_Diagnostics_class(self):
-    #    newDiagnostics = Diagnostic()
 
     # This test checks the initialisation of the Particle class
     def test_Particle_class(self):
@@ -71,59 +70,71 @@ class Testing(unittest.TestCase):
         self.assertEqual(IC.weight, weight)
         self.assertEqual(IC.neutrals_velocity, initial_neutral_velocity)
 
-    # This test checks whether the charge exchange function conserves momentum
-    # after running for 250 timesteps
+    # This test checks whether the charge exchange function conserves total momentum
     def test_CX_function(self):
         print("\n Testing the charge exchange function contained within particle class")
         # Constants
         mass_ion = 1.0
         mass_neutral = 1.0
-
-        # Conversion of units
+        number_of_macroparticles=20000
+        volume=2.0
+        # Conversion of units (currently not used)
         SI_to_Nektar_n = 3.33333e-19
 
-        # Initial Conditions
-        initial_fluid_momentum = 1.5
+        #Fluid properties
+        initial_fluid_momentum_single_ion = 1.5
         initial_fluid_density = 3.3e18
-        weight = np.random.choice(np.linspace(1.0e16, 2.0e16, num=100), size=(100))
-        initial_neutral_velocity = np.random.choice(
-            np.linspace(0.0, 1.0, num=100), size=(100)
-        )
-        # weight = np.array([1.65e16,2.0e16])
-        # initial_neutral_velocity = np.array([0.2, 2.0])
+        initial_fluid_temperature= 4.0
+        initial_fluid_bulk_momentum_density=initial_fluid_momentum_single_ion*initial_fluid_density
 
-        # Timestep info
-        number_of_timesteps = 2000
-        # dt_nektar = 0.005
-        dt_SI = 1.66667e-8
+        #Particle properties
+        neutrals_density=3.3e+18   
+        mu = 1.5
+        particle_thermal_velocity = 0.000001 # mean and standard deviation
+        initial_neutral_velocity = np.random.normal(mu, particle_thermal_velocity, number_of_macroparticles)
+        initial_neutral_velocity = (initial_neutral_velocity - np.mean(initial_neutral_velocity))*(particle_thermal_velocity/np.std(initial_neutral_velocity)) + mu
+        weight = np.full(number_of_macroparticles,neutrals_density*volume/float(number_of_macroparticles))
+        #Timestep info
+        number_of_timesteps = 3200
+        dt_SI = 1e-8
 
-        # Rate info
+        #Rate info
         CXrate = 5e-14
 
+        #Define Initial conditions class
         IC = CX.InitialConditions(
             initial_fluid_density,
-            initial_fluid_momentum,
+            initial_fluid_bulk_momentum_density,
             weight,
             initial_neutral_velocity,
         )
+
+        #Define particles and fluid
         newPart = CX.Particles(mass_neutral, weight, initial_neutral_velocity)
         newIonFluid = CX.IonFluid(
-            mass_ion, initial_fluid_density, initial_fluid_momentum
+            mass_ion, initial_fluid_density, initial_fluid_bulk_momentum_density,initial_fluid_temperature,volume
         )
+        #Setup runner class
+        CXrunner = CX.runner( newIonFluid, newPart, number_of_timesteps, dt_SI, CXrate,volume)
 
-        CXrunner = CX.runner(
-            IC, newIonFluid, newPart, number_of_timesteps, dt_SI, CXrate
-        )
+        momentum_particles_before = mass_neutral*np.sum(np.multiply(weight,initial_neutral_velocity))
+        momentum_fluid_before = initial_fluid_bulk_momentum_density*volume
+        
+        #Peform charge exchange between fluid and particles
         CXrunner.runCX()
-        # self.assertLess(
-        #    abs(
-        #        CXrunner.ions.mom
-        #        + CXrunner.neutrals.mass * CXrunner.neutrals.vel
-        #        - initial_fluid_momentum
-        #        - mass_neutral * initial_neutral_velocity
-        #    ),
-        #    1e-12, "Total Momentum not conserved for charge exchange"
-        # )
+  
+        momentum_particles_after = CXrunner.neutrals.mass*np.sum(np.multiply(CXrunner.neutrals.weight,CXrunner.neutrals.vel))
+        
+        #Test that total momentum is conserved
+        self.assertLess(
+        abs(
+              CXrunner.ions.mom*volume
+            + momentum_particles_after
+            - momentum_fluid_before
+            - momentum_particles_before
+        )/abs(initial_fluid_bulk_momentum_density*volume+momentum_particles_before),
+        1e-14, "Total Momentum not conserved for charge exchange"
+        )
 
 
 if __name__ == "__main__":
