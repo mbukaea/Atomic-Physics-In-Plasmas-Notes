@@ -1,6 +1,6 @@
 # Reformat python scripts in this repository using black
 # and reformat shell scripts in this repository using shfmt
-name: Reformat python scripts
+name: Run charge exchange unit tests
 
 on: 
   push:
