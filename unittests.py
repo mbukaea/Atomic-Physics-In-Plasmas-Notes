@@ -40,10 +40,12 @@ class Testing(unittest.TestCase):
         # Initial Conditions
         weight = np.array([1.65e16, 2.0e16])
         initial_neutral_velocity = np.array([0.2, 0.3])
+        initial_density=3.3E+18
 
-        newPart = CX.Particles(mass_neutral, weight, initial_neutral_velocity)
+        newPart = CX.Particles(mass_neutral, weight, initial_neutral_velocity,initial_density)
 
         self.assertEqual(newPart.mass, mass_neutral)
+        self.assertEqual(newPart.density, initial_density)
         self.assertEqual(newPart.vel[0], initial_neutral_velocity[0])
         self.assertEqual(newPart.vel[1], initial_neutral_velocity[1])
         self.assertEqual(newPart.weight[0], weight[0])
@@ -76,27 +78,27 @@ class Testing(unittest.TestCase):
         # Constants
         mass_ion = 1.0
         mass_neutral = 1.0
-        number_of_macroparticles=20000
+        number_of_macroparticles=100
         volume=2.0
         # Conversion of units (currently not used)
         SI_to_Nektar_n = 3.33333e-19
-
+        #20 Timestepos 512 Particles
         #Fluid properties
         initial_fluid_momentum_single_ion = 1.5
         initial_fluid_density = 3.3e18
-        initial_fluid_temperature= 4.0
+        initial_fluid_temperature= 0.0000000001
         initial_fluid_bulk_momentum_density=initial_fluid_momentum_single_ion*initial_fluid_density
 
         #Particle properties
-        neutrals_density=3.3e+18   
-        mu = 1.5
-        particle_thermal_velocity = 0.000001 # mean and standard deviation
+        neutrals_density=6.6e+18   
+        mu = 0.0
+        particle_thermal_velocity = 1.0 # mean and standard deviation
         initial_neutral_velocity = np.random.normal(mu, particle_thermal_velocity, number_of_macroparticles)
         initial_neutral_velocity = (initial_neutral_velocity - np.mean(initial_neutral_velocity))*(particle_thermal_velocity/np.std(initial_neutral_velocity)) + mu
         weight = np.full(number_of_macroparticles,neutrals_density*volume/float(number_of_macroparticles))
         #Timestep info
-        number_of_timesteps = 3200
-        dt_SI = 1e-8
+        number_of_timesteps = 1600
+        dt_SI = 2e-8
 
         #Rate info
         CXrate = 5e-14
@@ -110,7 +112,7 @@ class Testing(unittest.TestCase):
         )
 
         #Define particles and fluid
-        newPart = CX.Particles(mass_neutral, weight, initial_neutral_velocity)
+        newPart = CX.Particles(mass_neutral, weight, initial_neutral_velocity,neutrals_density)
         newIonFluid = CX.IonFluid(
             mass_ion, initial_fluid_density, initial_fluid_bulk_momentum_density,initial_fluid_temperature,volume
         )
@@ -133,7 +135,7 @@ class Testing(unittest.TestCase):
             - momentum_fluid_before
             - momentum_particles_before
         )/abs(initial_fluid_bulk_momentum_density*volume+momentum_particles_before),
-        1e-14, "Total Momentum not conserved for charge exchange"
+        1E-14, "Total Momentum not conserved for charge exchange to 1 part in 10^14"
         )
 
 

@@ -110,7 +110,7 @@
 #'
 #' #### Total Energy
 #'
-#' The average kinetic energy of a particle is
+#' The average kinetic energy of a ion is
 #' \begin{equation}
 #' \dfrac{m}{2 \sigma \sqrt{2 \pi} } \int_{-\infty}^{\infty} v^{2} e^{-\dfrac{1}{2} \Big( \dfrac{v - \mu}{\sigma} \Big)^{2} } dv
 #' \end{equation}
@@ -124,7 +124,7 @@
 #' \end{equation}
 #' After substitution you get
 #' \begin{equation}
-#' \dfrac{m}{2 \sqrt{pi}} \int_{-\infty}^{\infty} ( 2 \sigma^{2} u^{2} + 2 \sqrt{2} \mu \sigma u + \mu^{2} ) e^{-u^2} du 
+#' \dfrac{m}{2 \sqrt{\pi}} \int_{-\infty}^{\infty} ( 2 \sigma^{2} u^{2} + 2 \sqrt{2} \mu \sigma u + \mu^{2} ) e^{-u^2} du 
 #' \end{equation}
 #' The integral over $u e^{-u^2}$ can be seen to be 0 by symmetry. The other integrals are known and are as follows 
 #' \begin{equation}
@@ -138,29 +138,66 @@
 #' \begin{equation}
 #' \ = \ \dfrac{m}{2} ( \mu^2 + \sigma^2 )
 #' \end{equation}
+#' This can then be multiplied by the number of ions to get the total energy. The total energy is the macroparticles can be
+#' calculated by simply performing the sum
+#' \begin{equation}
+#' \dfrac{1}{2} m_{neutral} \sum_{n=0}^{n_{macroparticles}} w_{n} v_{n}^{2}
+#' \end{equation}
+#'
 #'
 #' #### Multiple particles added
 #' 
 #' The rate of change of the $n^{th}$ weight weight is 
 #' \begin{equation}
-#' \dfrac{dw_{n}}{dt} = R_{CE,n} \ w_{n} \ n_{ions} (\#eq:dw-charge-exchange-n)
+#' N_{CE,n} = R_{CE,n} \ w_{n} \ n_{ions} (\#eq:dw-charge-exchange-n)
 #' \end{equation}
 #' The evolution of the $n^{th}$ particles velocity is
 #' \begin{equation}
-#' \dfrac{dv_{pn}}{dt} = - \dfrac{dw_{n}}{dt} \dfrac{v_{pn}}{w_{n}} + \dfrac{dw_{n}}{dt} \dfrac{v_{f}}{w_{n}} (\#eq:dvpdt-charge-exchange-n)
+#' \dfrac{dv_{pn}}{dt} = - N_{CE,n} \dfrac{v_{pn}}{w_{n}} + N_{CE,n} \dfrac{v_{f}}{w_{n}} (\#eq:dvpdt-charge-exchange-n)
 #' \end{equation}
 #' The evolution of the velocity of the fluid is
 #' \begin{equation}
-#' \dfrac{dv_{f}}{dt} = \sum_{n} \Bigg( \dfrac{dw_{n}}{dt} \dfrac{v_{pn}}{N_{ions}} - \dfrac{dw_{n}}{dt} \dfrac{v_{f}}{N_{ions}} \Bigg) (\#eq:dvfdt-charge-exchange-n)
+#' \dfrac{dv_{f}}{dt} = \sum_{n} \Bigg( N_{CE,n} \dfrac{v_{pn}}{N_{ions}} - N_{CE,n} \dfrac{v_{f}}{N_{ions}} \Bigg) (\#eq:dvfdt-charge-exchange-n)
 #' \end{equation}
-#' For 2 macroparticles and a fluid this equations to (writing out in matrix form)
+#' If we now sum equation \@ref(\#eq:dvpdt-charge-exchange-n) over n we get (replacing the sum of the velocities of the particles with the $n_{macroparticles} * v_{all \ macroparticles}$ and dividing by $n_{max}$)
 #' \begin{equation}
-#' \dfrac{d}{dt} \begin{pmatrix} v_{p1} \\ v_{p2} \\ v_{f} \end{pmatrix}  =
-#' \begin{pmatrix} - \dfrac{dw_{1}}{dt} \dfrac{1}{w_{1}} & 0 &  \dfrac{dw_{1}}{dt} \dfrac{1}{w_{1}} \\
-#'                 0 &  - \dfrac{dw_{2}}{dt} \dfrac{1}{w_{2}} & \dfrac{dw_{2}}{dt} \dfrac{1}{w_{2}} \\
-#'                 \dfrac{dw_{1}}{dt} \dfrac{1}{N_{ions}} & \dfrac{dw_{2}}{dt} \dfrac{1}{N_{ions}} & - \dfrac{dw_{1}}{dt} \dfrac{1}{N_{ions}} - \dfrac{dw_{2}}{dt} \dfrac{1}{N_{ions}} \end{pmatrix}
-#' \begin{pmatrix} v_{p1} \\ v_{p2} \\ v_{f} \end{pmatrix}
+#' \dfrac{d v_{all \ macroparticles} }{dt} \ = \ - R_{CE,n} n_{ions} v_{all \ macroparticles} +  R_{CE,n} n_{ions} v_{f}
 #' \end{equation}
+#' where $v_{all \ macroparticles}$ is the average velocity of all the macroparticles. Writing out $w$ explicity it can also be seen that \@ref(\#eq:dvfdt-charge-exchange-n)
+#' can be written as follows (againt replacing the sum of the velocities of the particles with the $n_{macroparticles} * v_{all \ macroparticles}$
+#' \begin{equation}
+#' \dfrac{dv_{f}}{dt} = R_{CE,n} n_{neutrals} v_{all \ macroparticles} -  R_{CE,n} n_{neutrals} v_{f}
+#' \end{equation}
+#' The general solution of these two coupled differential equations is
+#' \begin{equation}
+#' v_{all \ macroparticles} \ = \ \dfrac{c_1 (ae^{-(a+b)t} + b) - ac_2 ( e^{-(a+b)t} - 1) }{a+b}
+#' \end{equation}
+#' and
+#' \begin{equation}
+#' v_{f} \ = \ \dfrac{c_2 (be^{-(a+b)t} + a) - bc_2 ( e^{-(a+b)t} - 1) }{a+b}
+#' \end{equation}
+#' where due to the initial conditions 
+#' \begin{equation}
+#' c_{1} \ = \ v_{all \ macroparticles} (t=0) \quad \textrm{and} \quad c_2 \ = \ v_{f} (t=0)
+#' \end{equation}
+#'
+#' ### Algorithm
+#' 
+#' #### Initial State
+#' 
+#'
+#' #### Fluid Sampling
+#' When randomly sampling from a normal distribution because we are sampling a finite number of samples the mean and standard deviation that your
+#' returned sample has will not be the mean and standard deviation you requested. This can be rectified by making the following transform on your outputted sample
+#' \begin{equation}
+#' new_{sample} \ = \ \Bigg( old_{sample} - \mu_{old\_sample} \Bigg) \Bigg( \dfrac{\sigma_{new\_sample}}{\sigma_{old\_sample}} \Bigg) + \mu_{new\_sample}
+#' \end{equation}
+#'
+#' #### Charge Exchange
+#'
+#'
+#' #### Fluid Temperature Update
+#'
 #'
 #' ### Results
 #' One example of performing charge exchange between 2000 macroparticles and a fluid, and calculating the
@@ -174,7 +211,7 @@ knitr::include_graphics("./Momentum_Numerical_Bulk.png")
 knitr::include_graphics("./Momentum_Numerical_Single.png")
 
 #+, momentum-exp, out.width="75%", fig.cap="Check of exponential factor in evolution of single atom properties compared to expected solution.", echo=FALSE
-knitr::include_graphics("../Images/2E-8/Diff_Exp.png")
+knitr::include_graphics("./Momentum_Numerical_Slope.png")
 #' ## Ionise 
 #' This section will outline what is involved in implementing ionisation 
 #'
