@@ -311,7 +311,6 @@ class runner:
 
         total_energy = self.ions.kinetic_energy + self.neutrals.kinetic_energy
         for i in range(len(ionMom)):
-            print(i)
             ionMom[i] = self.ions.mom
             for j in range(len(self.neutrals.vel)):
                 neutralVel[i, j] = self.neutrals.vel[j]
