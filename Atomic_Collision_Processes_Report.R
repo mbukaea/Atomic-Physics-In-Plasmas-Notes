@@ -108,7 +108,7 @@
 #' \end{equation}
 #' It can easily be seen that $\frac{w}{V}$ is independent ont the volume.
 #'
-#' #### Total Energy
+#' #### Total Energy 
 #'
 #' The average kinetic energy of a ion is
 #' \begin{equation}
@@ -143,6 +143,88 @@
 #' \begin{equation}
 #' \dfrac{1}{2} m_{neutral} \sum_{n=0}^{n_{macroparticles}} w_{n} v_{n}^{2}
 #' \end{equation}
+#' After performing charge exchange you would end up with 2 macroparticles per macroparticle you began with, with the kinetic energy being
+#' \begin{equation}
+#' E_{seperate} = \ \dfrac{m_{neutral}}{2} \sum_{n} \Bigg( (w_{n} - N_{CE,n}) v_{n}^{2} + N_{CE,n} v_{i}^{2} \Bigg)
+#' \end{equation}
+#' In order to have the number of macroparticles increase with time we merge these 2 macroparticles to conserve momentum. The total kinetic energy of all the macroparticles
+#' after this is
+#' \begin{equation}
+#' = \ \dfrac{m_{neutral}}{2} \sum_{n} w_{n} \Bigg( \dfrac{(w_{n} - N_{CE,n}) v_{n} + N_{CE,n} v_{i}}{w_{n}} \Bigg)^{2}
+#' \end{equation}
+#' Expanding this out you get
+#' \begin{equation}
+#' E_{combined} \ = \ \dfrac{m_{neutral}}{2} \sum_{n}  \Bigg( \dfrac{(w_{n} - N_{CE,n} )^2 v_{n} + 2 N_{CE,n} (w_{n} - N_{CE,n}) v_{n} v_{i} + N_{CE,n}^{2} v_{i}^{2}}{w_{n}} \Bigg)
+#' \end{equation}
+#' It can clearly be seen that combining these macroparticles to conserve momentum has caused the kinetic energy of all the macroparticles to change, therby effecting the 
+#' energy the fluid would need to be to conserve energy. This change in kinetic energy is ($E_{combined}-E_{seperate}$)
+#' \begin{equation}
+#' = \dfrac{m_{neutral}}{2} \sum_{n} \Bigg( \dfrac{(-N_{CE,n} w + N_{CE,n}^{2} ) v_{i}^{2} + 2 N_{CE,n} (w_{n} - N_{CE,n}) v_{n} v_{i} + N_{CE,n}^{2} v_{i}^{2} - N_{CE,n} w_{n} v_{i}^{2}  }{w_{n}} \Bigg)
+#' \end{equation}
+#' This can be rewritten as 
+#' \begin{equation}
+#' = \ \dfrac{ m_{neutral} }{2} \sum_{n} \Bigg( (-1 + dt R_{CE} n_{ions})N_{CE,n} (v_{n} - v_{i} )^{2} \Bigg)
+#' \end{equation} 
+#' which can easily be seen to be less than 0, which means that the collective kinetic energy of all the macroparticles decreases when you combine 
+#' macroparticles to conserve momentum, thereby requiring the kinetic energy of the fluid to increase, and by extension its temperature. Averging the quantity $(v_{1} - v_{2})^{2}$ over 2 Gaussian distributions
+#' \begin{equation}
+#' \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} d v_{1} d v_{2} ( v_{1}^{2} - 2 v_{1} v_{2} + v_{2}^{2} ) e^{- (\dfrac{v_{1} - \mu_{1} }{\sigma_{1}} )^{2} } e^{- (\dfrac{v_{2} - \mu_{2} }{\sigma_{2}})^{2}}
+#' \end{equation}
+#' Looking at the term proporitional to $v_{1}^{2}$
+#' \begin{equation}
+#' \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} d v_{1} d v_{2} v_{1}^{2} e^{- (\dfrac{v_{1} - \mu_{1} }{\sigma_{1}} )^{2} } e^{- (\dfrac{v_{2} - \mu_{2} }{\sigma_{2}})^{2}}
+#' \end{equation}
+#' performing the integral over $v_{2}$ you get (after making a substitution $u=(v_{2}-\mu_{2})/ \sigma_{2}$)
+#' \begin{equation}
+#' \sigma_{2} \sqrt{\pi}  \int_{-\infty}^{\infty} d v_{1} v_{1}^{2} e^{- (\dfrac{v_{1} - \mu_{1} }{\sigma_{1}} )^{2} }
+#' \end{equation}
+#' Performing the substitution $u=(v_{1}-\mu_{1})/ \sigma_{2}$ this reduces to (integral over $ue^{-u^{2}}$ is 0 by symmetry
+#' \begin{equation}
+#' \sigma_{1} \sigma_{2} \sqrt{\pi} \int_{-\infty}^{\infty} du (\mu_{1}^{2} + \sigma_{1} u^{2}) e^{-u^{2}} 
+#' \end{equation}
+#' Using the Gaussian integrals defined in the section on total energy this reduces to
+#' \begin{equation}
+#' \sigma_{1} \sigma_{2} \pi (\mu_{1}^{2} + \dfrac{\sigma_{1}^{2}}{2} )
+#' \end{equation} 
+#' By symmetry the integral proportional to $v_{2}^{2}$ is
+#' \begin{equation}
+#' \sigma_{1} \sigma_{2} \pi (\mu_{2}^{2} + \dfrac{\sigma_{2}^{2}}{2} )
+#' \end{equation}
+#' Now returning to the integral over $v_{1} v_{2} $
+#' \begin{equation}
+#' -2 \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} d v_{1} d v_{2} v_{1} v_{2} e^{- (\dfrac{v_{1} - \mu_{1} }{\sigma_{1}} )^{2} } e^{- (\dfrac{v_{2} - \mu_{2} }{\sigma_{2}})^{2}}
+#' \end{equation}
+#' This is a double integral similar to one already seen and reduces to
+#' \begin{equation}
+#' = \sigma_{1} \sigma_{2} \pi \mu_{1} \mu_{2}
+#' \end{equation}
+#'
+#' Adding these 3 results together you get
+#' \begin{equation}
+#' = \ \sigma_{1} \sigma_{2} \pi \Bigg( \mu_{1}^{2}  + \dfrac{\sigma_{1}^{2}}{2} \Bigg) - 2 \sigma_{1} \sigma_{2} \mu_{1} \mu_{2} \pi + \sigma_{1} \sigma_{2} \pi \Bigg( \mu_{2}^{2}  + \dfrac{\sigma_{2}^{2}}{2} \Bigg)
+#' \end{equation}
+#'
+#' \begin{equation}
+#' = \sigma_{1} \sigma_{2} \pi (\mu_{1} - \mu_{2})^{2} + \dfrac{\sigma_{1} \sigma_{2}}{2} \pi (\sigma_{1}^{2} + \sigma_{2}^{2})
+#' \end{equation}
+#'
+#' Now doing the average value of $(v_{1} - v_{2})$ and squaring it
+#' \begin{equation}
+#' \Bigg( \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} d v_{1} d v_{2} ( v_{1} - v_{2} ) e^{- (\dfrac{v_{1} - \mu_{1} }{\sigma_{1}} )^{2} } e^{- (\dfrac{v_{2} - \mu_{2} }{\sigma_{2}})^{2}} \Bigg)^{2}
+#' \end{equation}
+#'
+#' \begin{equation}
+#' = \Bigg( \sigma_{1} \sigma_{2} \pi \mu_{1} - \sigma_{1} \sigma_{2} \pi \mu_{2}  \Bigg)^{2}
+#' \end{equation}
+#'
+#' \begin{equation}
+#' = \sigma_{1}^{2} \sigma_{2}^{2} \pi^{2} ( \mu_{1} - \mu_{2} )^{2}
+#' \end{equation}
+#'
+#'
+#'
+#'
+#'
 #'
 #'
 #' #### Multiple particles added
@@ -170,34 +252,16 @@
 #' \end{equation}
 #' The general solution of these two coupled differential equations is
 #' \begin{equation}
-#' v_{all \ macroparticles} \ = \ \dfrac{c_1 (ae^{-(a+b)t} + b) - ac_2 ( e^{-(a+b)t} - 1) }{a+b}
+#' v_{all \ macroparticles} \ = \ \dfrac{c_1 (n_{ions}e^{-(n_{ions}+n_{neutrals})t} + n_{neutrals}) -  n_{ions} c_2 ( e^{-(n_{ions} + n_{neutrals} )t} - 1) }{n_{ions}+n_{neutrals}}
 #' \end{equation}
 #' and
 #' \begin{equation}
-#' v_{f} \ = \ \dfrac{c_2 (be^{-(a+b)t} + a) - bc_2 ( e^{-(a+b)t} - 1) }{a+b}
+#' v_{f} \ = \ \dfrac{c_2 (n_{neutrals} e^{-(n_{ions}+n_{neutrals})t} + n_{ions}) - n_{neutrals} c_2 ( e^{-(n_{ions}+n_{neutrals})t} - 1) }{n_{ions}+n_{neutrals}}
 #' \end{equation}
 #' where due to the initial conditions 
 #' \begin{equation}
 #' c_{1} \ = \ v_{all \ macroparticles} (t=0) \quad \textrm{and} \quad c_2 \ = \ v_{f} (t=0)
 #' \end{equation}
-#'
-#' ### Algorithm
-#' 
-#' #### Initial State
-#' 
-#'
-#' #### Fluid Sampling
-#' When randomly sampling from a normal distribution because we are sampling a finite number of samples the mean and standard deviation that your
-#' returned sample has will not be the mean and standard deviation you requested. This can be rectified by making the following transform on your outputted sample
-#' \begin{equation}
-#' new_{sample} \ = \ \Bigg( old_{sample} - \mu_{old\_sample} \Bigg) \Bigg( \dfrac{\sigma_{new\_sample}}{\sigma_{old\_sample}} \Bigg) + \mu_{new\_sample}
-#' \end{equation}
-#'
-#' #### Charge Exchange
-#'
-#'
-#' #### Fluid Temperature Update
-#'
 #'
 #' ### Results
 #' One example of performing charge exchange between 2000 macroparticles and a fluid, and calculating the
