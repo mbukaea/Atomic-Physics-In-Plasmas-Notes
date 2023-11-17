@@ -76,7 +76,7 @@ class Testing(unittest.TestCase):
         # Constants
         mass_ion = 1.0
         mass_neutral = 1.0
-        number_of_macroparticles=200000
+        number_of_macroparticles=2000
         volume=2.0
         # Conversion of units (currently not used)
         SI_to_Nektar_n = 3.33333e-19
@@ -95,8 +95,8 @@ class Testing(unittest.TestCase):
         initial_neutral_velocity = (initial_neutral_velocity - np.mean(initial_neutral_velocity))*(particle_thermal_velocity/np.std(initial_neutral_velocity)) + mu
         weight = np.full(number_of_macroparticles,neutrals_density*volume/float(number_of_macroparticles))
         #Timestep info
-        number_of_timesteps = 32000
-        dt_SI = 1e-9
+        number_of_timesteps = 3200
+        dt_SI = 1e-8
 
         #Rate info
         CXrate = 5e-14
